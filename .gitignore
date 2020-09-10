@@ -15,4 +15,3 @@
 # vendor/
 
 mkpw
-cmd/version_gen.go

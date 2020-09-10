@@ -1,26 +1,27 @@
 # Makefile
 
-QUIET := @
-MKDIR := mkdir -p
-RM    := rm -rf
-GO    := go
-HASH  := $(shell git rev-parse --short HEAD)
+QUIET   := @
+MKDIR   := mkdir -p
+RM      := rm -rf
+GO      := GO111MODULE=on go
+VERSION := 0.1
+HASH    := $(shell git rev-parse --short HEAD)
+
+VERSIONFLAGS += -X 'mkpw/cmd.Version=$(VERSION)'
+VERSIONFLAGS += -X 'mkpw/cmd.GitHash=$(HASH)'
+LDFLAGS += -ldflags "$(VERSIONFLAGS)"
 
 main := main.go
-source := $(filter-out version_gen.go,$(wildcard cmd/*.go)) \
-  $(wildcard pkg/*/*.go) $(main)
+source := $(wildcard cmd/*.go) $(wildcard pkg/*/*.go) $(main)
 bin := mkpw
 
 
-.PHONY: all clean update-version
+.PHONY: all clean
 
-all: update-version $(bin)
+all: $(bin)
 
-update-version:
-	$(QUIET) sed -e 's/{hash}/${HASH}/g' ./cmd/version_gen.go.tpl > ./cmd/version_gen.go
-
-$(bin): $(source) $(update-version)
-	$(QUIET) $(GO) build -o $(notdir $@) $(main)
+$(bin): $(source)
+	$(QUIET) $(GO) build $(LDFLAGS) -o $(notdir $@) $(main)
 
 clean:
 	$(QUIET) $(RM) $(bin)

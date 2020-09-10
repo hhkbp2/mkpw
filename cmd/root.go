@@ -169,7 +169,7 @@ var (
 
 func run() {
 	if printVersion {
-		fmt.Printf("version: %s\n", version)
+		printVersionInfo()
 		os.Exit(0)
 	}
 
